@@ -1,5 +1,5 @@
 # portfolio
-Portfolio of different things I've worked
+This is a portfolio of different things I've worked on over the past several years.
 
 I've included a number of different mirth channels that I worked on exclusively.  They are listed with a brief description.
 
