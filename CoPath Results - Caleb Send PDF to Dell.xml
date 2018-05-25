@@ -1,0 +1,71 @@
+<connector>
+  <name>Send PDF to Dell</name>
+  <properties>
+    <property name="DataType">File Writer</property>
+    <property name="FTPAnonymous">0</property>
+    <property name="binary">1</property>
+    <property name="charsetEncoding">DEFAULT_ENCODING</property>
+    <property name="host">10.2.74.161/CoPath</property>
+    <property name="outputAppend">0</property>
+    <property name="outputPattern">${pdfFileName}</property>
+    <property name="passive">1</property>
+    <property name="password">ft10ft</property>
+    <property name="scheme">ftp</property>
+    <property name="secure">1</property>
+    <property name="template">${pdfFileBytes}</property>
+    <property name="timeout">10000</property>
+    <property name="username">foote</property>
+    <property name="validateConnections">1</property>
+  </properties>
+  <transformer>
+    <steps>
+      <step>
+        <sequenceNumber>0</sequenceNumber>
+        <name>Retrieve and encode PDF file.</name>
+        <script>var path = msg[&apos;ZRP&apos;][&apos;ZRP.5&apos;][&apos;ZRP.5.1&apos;].toString();
+path = path.replace(/\\/g,&apos;/&apos;);
+
+var fromFile = &quot;/mnt&quot; + path.substring(1);
+
+var pdfFileBytes = FileUtil.encode(FileUtil.readBytes(fromFile));
+
+channelMap.put(&apos;pdfFileBytes&apos;,pdfFileBytes);
+
+var pdfFileName = UUIDGenerator.getUUID() + &quot;.pdf&quot;;
+
+channelMap.put(&apos;pdfFileName&apos;,pdfFileName);</script>
+        <type>JavaScript</type>
+        <data class="map">
+          <entry>
+            <string>Script</string>
+            <string>var path = msg[&apos;ZRP&apos;][&apos;ZRP.5&apos;][&apos;ZRP.5.1&apos;].toString();
+path = path.replace(/\\/g,&apos;/&apos;);
+
+var fromFile = &quot;/mnt&quot; + path.substring(1);
+
+var pdfFileBytes = FileUtil.encode(FileUtil.readBytes(fromFile));
+
+channelMap.put(&apos;pdfFileBytes&apos;,pdfFileBytes);
+
+var pdfFileName = UUIDGenerator.getUUID() + &quot;.pdf&quot;;
+
+channelMap.put(&apos;pdfFileName&apos;,pdfFileName);</string>
+          </entry>
+        </data>
+      </step>
+    </steps>
+    <inboundTemplate encoding="base64"></inboundTemplate>
+    <outboundTemplate encoding="base64"></outboundTemplate>
+    <inboundProtocol>HL7V2</inboundProtocol>
+    <outboundProtocol>HL7V2</outboundProtocol>
+    <inboundProperties/>
+    <outboundProperties/>
+  </transformer>
+  <filter>
+    <rules/>
+  </filter>
+  <transportName>File Writer</transportName>
+  <mode>DESTINATION</mode>
+  <enabled>true</enabled>
+  <version>2.1.1.5490</version>
+</connector>

@@ -1,0 +1,95 @@
+<connector>
+  <name>Send MDM to Dell</name>
+  <properties>
+    <property name="DataType">Channel Writer</property>
+    <property name="host">sink</property>
+    <property name="synchronised">0</property>
+    <property name="template">${message.encodedData}</property>
+  </properties>
+  <transformer>
+    <steps>
+      <step>
+        <sequenceNumber>0</sequenceNumber>
+        <name>Build MDM message for send to CAC.</name>
+        <script>// pulls ad variable from Send MDM to CAC destination to avoid a second look up on SYSA.
+var ad = $(&apos;ad&apos;)
+
+tmp[&apos;MSH&apos;][&apos;MSH.7&apos;][&apos;MSH.7.1&apos;] = DateUtil.getCurrentDate(&quot;yyyyMMddHHmmss&quot;);
+tmp[&apos;MSH&apos;][&apos;MSH.10&apos;][&apos;MSH.10.1&apos;]= DateUtil.getCurrentDate(&quot;yyyyMMddHHmmssSSS&quot;);
+tmp[&apos;PID&apos;][&apos;PID.3&apos;][&apos;PID.3.1&apos;] = ad.getMrNo();
+tmp[&apos;PID&apos;][&apos;PID.5&apos;][&apos;PID.5.1&apos;] = ad.getNameLast();
+tmp[&apos;PID&apos;][&apos;PID.5&apos;][&apos;PID.5.2&apos;] = ad.getNameFirst();
+tmp[&apos;PID&apos;][&apos;PID.5&apos;][&apos;PID.5.3&apos;] = ad.getNameMiddle();
+tmp[&apos;PID&apos;][&apos;PID.7&apos;][&apos;PID.7.1&apos;] = ad.getDob();
+tmp[&apos;PID&apos;][&apos;PID.8&apos;][&apos;PID.8.1&apos;] = ad.getSex();
+tmp[&apos;PID&apos;][&apos;PID.10&apos;][&apos;PID.10.1&apos;] = ad.getRace();
+tmp[&apos;PID&apos;][&apos;PID.16&apos;][&apos;PID.16.1&apos;] = ad.getMarriageCode();
+tmp[&apos;PID&apos;][&apos;PID.18&apos;][&apos;PID.18.1&apos;] = ad.getAccountNo();
+tmp[&apos;PID&apos;][&apos;PID.19&apos;][&apos;PID.19.1&apos;] = ad.getSsn();
+tmp[&apos;PV1&apos;][&apos;PV1.2&apos;][&apos;PV1.2.1&apos;] = ad.getPatientClass();
+tmp[&apos;TXA&apos;][&apos;TXA.4&apos;][&apos;TXA.4.1&apos;] = ad.getAdmitDateTime();
+tmp[&apos;TXA&apos;][&apos;TXA.12&apos;][&apos;TXA.12.1&apos;] = UUIDGenerator.getUUID();
+tmp[&apos;OBX&apos;][&apos;OBX.5&apos;][&apos;OBX.5.1&apos;] = &apos;\\\\10.2.74.161\\jcmr_dell\\Mamms\\&apos; + $(&apos;pdfFileName&apos;);
+tmp[&apos;OBX&apos;][&apos;OBX.5&apos;][&apos;OBX.5.3&apos;] = &apos;AP&apos;;
+tmp[&apos;OBX&apos;][&apos;OBX.5&apos;][&apos;OBX.5.4&apos;] = &apos;PDF&apos;;
+tmp[&apos;OBX&apos;][&apos;OBX.11&apos;][&apos;OBX.11.1&apos;] = &apos;F&apos;;</script>
+        <type>JavaScript</type>
+        <data class="map">
+          <entry>
+            <string>Script</string>
+            <string>// pulls ad variable from Send MDM to CAC destination to avoid a second look up on SYSA.
+var ad = $(&apos;ad&apos;)
+
+tmp[&apos;MSH&apos;][&apos;MSH.7&apos;][&apos;MSH.7.1&apos;] = DateUtil.getCurrentDate(&quot;yyyyMMddHHmmss&quot;);
+tmp[&apos;MSH&apos;][&apos;MSH.10&apos;][&apos;MSH.10.1&apos;]= DateUtil.getCurrentDate(&quot;yyyyMMddHHmmssSSS&quot;);
+tmp[&apos;PID&apos;][&apos;PID.3&apos;][&apos;PID.3.1&apos;] = ad.getMrNo();
+tmp[&apos;PID&apos;][&apos;PID.5&apos;][&apos;PID.5.1&apos;] = ad.getNameLast();
+tmp[&apos;PID&apos;][&apos;PID.5&apos;][&apos;PID.5.2&apos;] = ad.getNameFirst();
+tmp[&apos;PID&apos;][&apos;PID.5&apos;][&apos;PID.5.3&apos;] = ad.getNameMiddle();
+tmp[&apos;PID&apos;][&apos;PID.7&apos;][&apos;PID.7.1&apos;] = ad.getDob();
+tmp[&apos;PID&apos;][&apos;PID.8&apos;][&apos;PID.8.1&apos;] = ad.getSex();
+tmp[&apos;PID&apos;][&apos;PID.10&apos;][&apos;PID.10.1&apos;] = ad.getRace();
+tmp[&apos;PID&apos;][&apos;PID.16&apos;][&apos;PID.16.1&apos;] = ad.getMarriageCode();
+tmp[&apos;PID&apos;][&apos;PID.18&apos;][&apos;PID.18.1&apos;] = ad.getAccountNo();
+tmp[&apos;PID&apos;][&apos;PID.19&apos;][&apos;PID.19.1&apos;] = ad.getSsn();
+tmp[&apos;PV1&apos;][&apos;PV1.2&apos;][&apos;PV1.2.1&apos;] = ad.getPatientClass();
+tmp[&apos;TXA&apos;][&apos;TXA.4&apos;][&apos;TXA.4.1&apos;] = ad.getAdmitDateTime();
+tmp[&apos;TXA&apos;][&apos;TXA.12&apos;][&apos;TXA.12.1&apos;] = UUIDGenerator.getUUID();
+tmp[&apos;OBX&apos;][&apos;OBX.5&apos;][&apos;OBX.5.1&apos;] = &apos;\\\\10.2.74.161\\jcmr_dell\\Mamms\\&apos; + $(&apos;pdfFileName&apos;);
+tmp[&apos;OBX&apos;][&apos;OBX.5&apos;][&apos;OBX.5.3&apos;] = &apos;AP&apos;;
+tmp[&apos;OBX&apos;][&apos;OBX.5&apos;][&apos;OBX.5.4&apos;] = &apos;PDF&apos;;
+tmp[&apos;OBX&apos;][&apos;OBX.11&apos;][&apos;OBX.11.1&apos;] = &apos;F&apos;;</string>
+          </entry>
+        </data>
+      </step>
+    </steps>
+    <inboundTemplate encoding="base64">PHJlcG9ydD4KICAgIDxmaWxlbmFtZS8+CiAgICA8bXI+NTIxMzU3PC9tcj4KICAgIDxhY2NvdW50
+PjEwMTIxNzM0PC9hY2NvdW50Pgo8L3JlcG9ydD4K</inboundTemplate>
+    <outboundTemplate encoding="base64">TVNIfF5+JCZ8UEVOUkFEfHxNQU1NU3x8MjAxMjA2MDQxMTM3NTZ8fE1ETV5UMDJ8MjAxMjA2MDQx
+MTM3NTY2Njd8fHx8fHx8fHwNUElEfHx8MHx8QUtJTl5IRVJCRVJUXkhPT1ZFUnx8MTk1MzAyMjF8
+TXx8V3x8fHx8fE18fDEwMTE2MjAzfDM3MDU0NzcxNnx8fHx8fHx8DVBWMXwxfEl8fHx8fHx8fHx8
+fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHwNVFhBfHx8fHx8fHx8fHx8fHx8
+fE1BTV5NYW1tb2dyYXBoeSBSZXBvcnR8fHx8fHx8fHx8DU9CWHwxfFJQfE1BTXx8fHx8fHx8fHx8
+fHx8</outboundTemplate>
+    <inboundProtocol>XML</inboundProtocol>
+    <outboundProtocol>HL7V2</outboundProtocol>
+    <inboundProperties>
+      <property name="stripNamespaces">true</property>
+    </inboundProperties>
+    <outboundProperties>
+      <property name="convertLFtoCR">true</property>
+      <property name="handleRepetitions">false</property>
+      <property name="handleSubcomponents">false</property>
+      <property name="stripNamespaces">true</property>
+      <property name="useStrictParser">false</property>
+      <property name="useStrictValidation">false</property>
+    </outboundProperties>
+  </transformer>
+  <filter>
+    <rules/>
+  </filter>
+  <transportName>Channel Writer</transportName>
+  <mode>DESTINATION</mode>
+  <enabled>false</enabled>
+  <version>2.1.1.5490</version>
+</connector>

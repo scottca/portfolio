@@ -1,0 +1,83 @@
+<list>
+  <codeTemplate version="3.0.3">
+    <id>7a388642-ddfe-4a13-989f-d5dc88ac9aae</id>
+    <name>trimFilenameExt</name>
+    <tooltip>Trim the file extension from the file name passed in as parameter &apos;file&apos;</tooltip>
+    <code>// modify function_name and parameters as you wish.
+// one function per template is recommended. i.e.) create a new code template for each new function.
+function trimFilenameExt(file) {
+	var original = file;
+	var dotPos = original.indexOf(&quot;.&quot;);
+
+	return original.slice(0, dotPos);
+}</code>
+    <type>FUNCTION</type>
+    <scope>3</scope>
+  </codeTemplate>
+  <codeTemplate version="3.0.3">
+    <id>53675dc2-312d-47ee-b941-d81bb62cf832</id>
+    <name>getFilename</name>
+    <tooltip>Return the Filename from the UNC path passed in as parameter &apos;path&apos;</tooltip>
+    <code>// modify function_name and parameters as you wish.
+// one function per template is recommended. i.e.) create a new code template for each new function.
+function getFilename(path) {
+	//Splits UNC path into an array of parts
+	var pathParts = path.split(&apos;\\&apos;); 
+
+	//Sets filename equal to the last element of the pathParts array
+	var filename = pathParts[pathParts.length - 1];
+	return filename;
+}</code>
+    <type>FUNCTION</type>
+    <scope>3</scope>
+  </codeTemplate>
+  <codeTemplate version="3.0.3">
+    <id>48e6f69d-4588-49ac-9d02-64ba8f590f99</id>
+    <name>trimLeadingZeros</name>
+    <tooltip>Trims leading zeros from the number passed in as parameter &apos;num&apos;</tooltip>
+    <code>// modify function_name and parameters as you wish.
+// one function per template is recommended. i.e.) create a new code template for each new function.
+function trimLeadingZeros(num) {
+
+	var number = num;
+	var firstDigit = number.slice(0,1);	
+
+	while (firstDigit == &apos;0&apos;) {
+		number = number.substr(1);
+		firstDigit = number.slice(0,1);
+	}
+	return number;
+}</code>
+    <type>FUNCTION</type>
+    <scope>3</scope>
+  </codeTemplate>
+  <codeTemplate version="3.0.3">
+    <id>88d24574-a6f3-4df0-b965-bcfd722626dc</id>
+    <name>drLookup</name>
+    <tooltip>Look up doctor number from Solcom Crossplatform.</tooltip>
+    <code>// modify function_name and parameters as you wish.
+// one function per template is recommended. i.e.) create a new code template for each new function.
+function drLookup(drNum) {
+
+var drNum = drNum
+var jdbcURL = &quot;jdbc:jtds:sqlserver://sccoredbsrv;instance=sccoredb&quot;;
+var jdbcDriver = &quot;net.sourceforge.jtds.jdbc.Driver&quot;;
+var sql = &quot;USE SolcomLibrarianProd Select kw_rd_phid, kw_rd_physnam From lb_PATREC_RD_PROVIDR Where kw_rd_phid = &quot; + drNum
+logger.info(sql);
+var dbConn = DatabaseConnectionFactory.createDatabaseConnection(jdbcDriver, jdbcURL, &apos;scowner&apos;, &apos;scownpwd3&apos;);
+var rs = dbConn.executeCachedQuery(sql);
+
+while (rs.next()) {
+	var physician = rs.getString(2).trim();
+}
+
+
+dbConn.close();
+
+return physician;
+
+}</code>
+    <type>FUNCTION</type>
+    <scope>3</scope>
+  </codeTemplate>
+</list>

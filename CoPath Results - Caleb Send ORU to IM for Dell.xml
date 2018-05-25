@@ -1,0 +1,240 @@
+<connector>
+  <name>Send ORU to IM for Dell</name>
+  <properties>
+    <property name="DataType">Channel Writer</property>
+    <property name="host">a5c2d0a5-a751-4ebd-bd72-6bf094470672</property>
+    <property name="synchronised">0</property>
+    <property name="template">${message.encodedData}</property>
+  </properties>
+  <transformer>
+    <steps>
+      <step>
+        <sequenceNumber>0</sequenceNumber>
+        <name>New Step</name>
+        <script>//  Create OBX Segment with path of PDF file and 
+//  correct report name.
+
+var path = msg[&apos;ZRP&apos;][&apos;ZRP.5&apos;][&apos;ZRP.5.1&apos;].toString();
+path = path.replace(/\\/g, &quot;/&quot;);
+path = path.substring(1);
+var pathParts = path.split(&quot;/&quot;);
+var pathFileName = pathParts[pathParts.length -1];
+var fileNameParts = pathFileName.split(&quot; &quot;);
+var reportNameIndicator = fileNameParts[0].substring(0, 1);
+var reportName = &quot;&quot;;
+
+if (reportNameIndicator == &apos;S&apos;) {
+	reportName = &quot;Surgical&quot;
+} else if (reportNameIndicator == &apos;M&apos;) {
+	reportName = &quot;Bone Marrow&quot;
+} else if (reportNameIndicator == &apos;A&apos;) {
+	reportName = &quot;Autopsy&quot;
+} else if (reportNameIndicator == &apos;C&apos;) {
+	reportName = &quot;Pap Smear&quot;
+} else if (reportNameIndicator == &apos;X&apos;) {
+	reportName = &quot;Cytology Non-Gyn&quot;
+} else {
+	reportName = &quot;Pathology Report&quot;
+}
+
+
+var newOBX = createSegment(&apos;OBX&apos;, msg);
+newOBX[&apos;OBX.1&apos;][&apos;OBX.1.1&apos;] = &apos;2&apos;;
+newOBX[&apos;OBX.2&apos;][&apos;OBX.2.1&apos;] = &apos;RP&apos;;
+newOBX[&apos;OBX.3&apos;][&apos;OBX.3.1&apos;] = reportName;
+newOBX[&apos;OBX.5&apos;][&apos;OBX.5.1&apos;] = &apos;\\\\10.2.74.102\\jcmr_dell\\copath\\&apos; + $(&apos;pdfFileName&apos;);
+
+delete msg[&apos;ZRP&apos;];
+
+
+
+//  Clean up PID.3 and PID.18 getting rid of &apos;FTE&apos; in PID.3.4 and PID.18.4
+
+delete msg[&apos;PID&apos;][&apos;PID.3&apos;][&apos;PID.3.4&apos;];
+delete msg[&apos;PID&apos;][&apos;PID.3&apos;][&apos;PID.3.3&apos;];
+delete msg[&apos;PID&apos;][&apos;PID.3&apos;][&apos;PID.3.2&apos;];
+delete msg[&apos;PID&apos;][&apos;PID.18&apos;][&apos;PID.18.4&apos;];
+delete msg[&apos;PID&apos;][&apos;PID.18&apos;][&apos;PID.18.3&apos;];
+delete msg[&apos;PID&apos;][&apos;PID.18&apos;][&apos;PID.18.2&apos;];
+
+//  place copy to docs into OBR.28
+
+
+var copyDocString = &quot;&quot;;
+
+for each (copyDoc in msg[&apos;PV1&apos;][&apos;PV1.8&apos;][&apos;PV1.8.1&apos;]) {
+	if (copyDoc.toString() != &quot;&quot;) {
+		if (copyDoc.indexOf(&apos;;&apos;) &gt; -1) {
+			copyDoc = copyDoc.substr(0, copyDoc.indexOf(&apos;;&apos;))
+		}
+		if (copyDocString != &quot;&quot;) {
+			copyDocString = copyDocString + &quot;~&quot;;
+		}
+		copyDocString = copyDocString + copyDoc.toString();
+	}
+
+}
+
+for each (copyDoc in msg[&apos;PV1&apos;][&apos;PV1.17&apos;][&apos;PV1.17.1&apos;]) {
+	if (copyDoc.toString() != &quot;&quot;) {
+		if (copyDoc.indexOf(&apos;;&apos;) &gt; 0) {
+			copyDoc = copyDoc.substr(0, copyDoc.indexOf(&apos;;&apos;))
+		}
+		if (copyDocString != &quot;&quot;) {
+			copyDocString = copyDocString + &quot;~&quot;;
+		}
+		copyDocString = copyDocString + copyDoc.toString();
+	}
+
+}
+
+var copyDocElement = new XML(&quot;&lt;OBR.28&gt;&lt;OBR.28.1&gt;&quot; + copyDocString + &quot;&lt;/OBR.28.1&gt;&lt;/OBR.28&gt;&quot;);
+
+var obr = msg[&apos;OBR&apos;];
+var obr28 = msg[&apos;OBR&apos;][&apos;OBR.28&apos;];
+
+if (obr28.length == 0) {
+	logger.error(&apos;obr28 = 0&apos;);
+	obr.appendChild(copyDocElement);
+}	else {
+	logger.error(&apos;obr28 &lt;&gt; 0&apos;);
+	obr.replace(&quot;OBR.28&quot;, copyDocString);
+}</script>
+        <type>JavaScript</type>
+        <data class="map">
+          <entry>
+            <string>Script</string>
+            <string>//  Create OBX Segment with path of PDF file and 
+//  correct report name.
+
+var path = msg[&apos;ZRP&apos;][&apos;ZRP.5&apos;][&apos;ZRP.5.1&apos;].toString();
+path = path.replace(/\\/g, &quot;/&quot;);
+path = path.substring(1);
+var pathParts = path.split(&quot;/&quot;);
+var pathFileName = pathParts[pathParts.length -1];
+var fileNameParts = pathFileName.split(&quot; &quot;);
+var reportNameIndicator = fileNameParts[0].substring(0, 1);
+var reportName = &quot;&quot;;
+
+if (reportNameIndicator == &apos;S&apos;) {
+	reportName = &quot;Surgical&quot;
+} else if (reportNameIndicator == &apos;M&apos;) {
+	reportName = &quot;Bone Marrow&quot;
+} else if (reportNameIndicator == &apos;A&apos;) {
+	reportName = &quot;Autopsy&quot;
+} else if (reportNameIndicator == &apos;C&apos;) {
+	reportName = &quot;Pap Smear&quot;
+} else if (reportNameIndicator == &apos;X&apos;) {
+	reportName = &quot;Cytology Non-Gyn&quot;
+} else {
+	reportName = &quot;Pathology Report&quot;
+}
+
+
+var newOBX = createSegment(&apos;OBX&apos;, msg);
+newOBX[&apos;OBX.1&apos;][&apos;OBX.1.1&apos;] = &apos;2&apos;;
+newOBX[&apos;OBX.2&apos;][&apos;OBX.2.1&apos;] = &apos;RP&apos;;
+newOBX[&apos;OBX.3&apos;][&apos;OBX.3.1&apos;] = reportName;
+newOBX[&apos;OBX.5&apos;][&apos;OBX.5.1&apos;] = &apos;\\\\10.2.74.102\\jcmr_dell\\copath\\&apos; + $(&apos;pdfFileName&apos;);
+
+delete msg[&apos;ZRP&apos;];
+
+
+
+//  Clean up PID.3 and PID.18 getting rid of &apos;FTE&apos; in PID.3.4 and PID.18.4
+
+delete msg[&apos;PID&apos;][&apos;PID.3&apos;][&apos;PID.3.4&apos;];
+delete msg[&apos;PID&apos;][&apos;PID.3&apos;][&apos;PID.3.3&apos;];
+delete msg[&apos;PID&apos;][&apos;PID.3&apos;][&apos;PID.3.2&apos;];
+delete msg[&apos;PID&apos;][&apos;PID.18&apos;][&apos;PID.18.4&apos;];
+delete msg[&apos;PID&apos;][&apos;PID.18&apos;][&apos;PID.18.3&apos;];
+delete msg[&apos;PID&apos;][&apos;PID.18&apos;][&apos;PID.18.2&apos;];
+
+//  place copy to docs into OBR.28
+
+
+var copyDocString = &quot;&quot;;
+
+for each (copyDoc in msg[&apos;PV1&apos;][&apos;PV1.8&apos;][&apos;PV1.8.1&apos;]) {
+	if (copyDoc.toString() != &quot;&quot;) {
+		if (copyDoc.indexOf(&apos;;&apos;) &gt; -1) {
+			copyDoc = copyDoc.substr(0, copyDoc.indexOf(&apos;;&apos;))
+		}
+		if (copyDocString != &quot;&quot;) {
+			copyDocString = copyDocString + &quot;~&quot;;
+		}
+		copyDocString = copyDocString + copyDoc.toString();
+	}
+
+}
+
+for each (copyDoc in msg[&apos;PV1&apos;][&apos;PV1.17&apos;][&apos;PV1.17.1&apos;]) {
+	if (copyDoc.toString() != &quot;&quot;) {
+		if (copyDoc.indexOf(&apos;;&apos;) &gt; 0) {
+			copyDoc = copyDoc.substr(0, copyDoc.indexOf(&apos;;&apos;))
+		}
+		if (copyDocString != &quot;&quot;) {
+			copyDocString = copyDocString + &quot;~&quot;;
+		}
+		copyDocString = copyDocString + copyDoc.toString();
+	}
+
+}
+
+var copyDocElement = new XML(&quot;&lt;OBR.28&gt;&lt;OBR.28.1&gt;&quot; + copyDocString + &quot;&lt;/OBR.28.1&gt;&lt;/OBR.28&gt;&quot;);
+
+var obr = msg[&apos;OBR&apos;];
+var obr28 = msg[&apos;OBR&apos;][&apos;OBR.28&apos;];
+
+if (obr28.length == 0) {
+	logger.error(&apos;obr28 = 0&apos;);
+	obr.appendChild(copyDocElement);
+}	else {
+	logger.error(&apos;obr28 &lt;&gt; 0&apos;);
+	obr.replace(&quot;OBR.28&quot;, copyDocString);
+}</string>
+          </entry>
+        </data>
+      </step>
+    </steps>
+    <inboundTemplate encoding="base64">TVNIfF5+XCZ8U1F8fENNfHwyMDExMDMyMTA5MDgwMHx8T1JVXlIwMXx8UHwyLjIKUElEfHx8NzQ4
+NzM0Xl5eRlRFfHxBREFNQ1pZS15KVUxJRSBFTElaQUJFVEh8fDE5NjYwMzA4fEZ8fHx8fHx8fHx8
+ODA2MzM2M15eXkZURQpQVjF8fHxGTnx8fHx8MTA1NzM7MV44OEEtQ0FSTkVZXkNBUk9MfHx8fHx8
+fHx8MzA4XjU5LUJFRUtNQU5eUllBTiBNRApPUkN8UkUKT0JSfHw3NDA0MjgwfDc0MDQyODAtMHwz
+NjAwMDY1XkN5dG9sb2d5fHx8MjAxMTAzMTcxMzI4MDB8fHx8fHx8MjAxMTAzMTcxMzI4MDB8fDMw
+OHx8fHxDb1BhdGh8fHx8fHx8Xl5eXl5SfHw0MV5zeWtlc2oKT0JYfDF8RlR8Q1BScHR8fFBhdGll
+bnQgTmFtZTogQURBTUNaWUssIEpVTElFIEVMSVpBQkVUSF5NUiM6IDc0ODczNF5TcGVjaW1lbiAj
+QzExLTQyODBeXlNvdXJjZTpeQ2VydmljYWwgSW1hZ2VkIFRoaW5QcmVwIFBhcCBSZWNlaXZlZCBp
+biBWaWFsXl5eR3Jvc3MgRGVzY3JpcHRpb25eXl5eTWljcm9zY29waWMgRGVzY3JpcHRpb25eXl5e
+RmluYWwgRGlhZ25vc2lzXlNwZWNpbWVuIEFkZXF1YWN5Ol5TYXRpc2ZhY3RvcnkgZm9yIGV2YWx1
+YXRpb25eQmxvb2QgUHJlc2VudF5eRmluYWwgQ3l0b2xvZ2ljIERpYWdub3NpczpeTmVnYXRpdmUg
+Rm9yIEludHJhZXBpdGhlbGlhbCBMZXNpb25zIG9yIE1hbGlnbmFuY3leTWVuc3RydWFsIFNtZWFy
+XiBeXl5eXkVMRUNUUk9OSUNBTExZIFNJR05FRCBPVVReXlByb2NlZHVyZS9BZGRlbmRhClpSUHx8
+MXwkZmluYWxeRmluYWwgUmVwb3J0XkZJTkFMfCRTL09eU2lnbmVkIE91dF5TL098XFxmdGVfY3Bf
+aW50XHBkZm91dCRcQzExLTQyODAgMjAxMTAzMjEwOTE1NTAucGRmXnBkZnx8fHxZCg==</inboundTemplate>
+    <outboundTemplate encoding="base64"></outboundTemplate>
+    <inboundProtocol>HL7V2</inboundProtocol>
+    <outboundProtocol>HL7V2</outboundProtocol>
+    <inboundProperties>
+      <property name="convertLFtoCR">true</property>
+      <property name="handleRepetitions">true</property>
+      <property name="stripNamespaces">true</property>
+      <property name="useStrictParser">false</property>
+      <property name="useStrictValidation">false</property>
+    </inboundProperties>
+    <outboundProperties>
+      <property name="convertLFtoCR">true</property>
+      <property name="handleRepetitions">false</property>
+      <property name="stripNamespaces">true</property>
+      <property name="useStrictParser">false</property>
+      <property name="useStrictValidation">false</property>
+    </outboundProperties>
+  </transformer>
+  <filter>
+    <rules/>
+  </filter>
+  <transportName>Channel Writer</transportName>
+  <mode>DESTINATION</mode>
+  <enabled>true</enabled>
+  <version>2.1.1.5490</version>
+</connector>

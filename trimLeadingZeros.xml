@@ -1,0 +1,21 @@
+<list>
+  <codeTemplate version="3.0.3">
+    <id>48e6f69d-4588-49ac-9d02-64ba8f590f99</id>
+    <name>trimLeadingZeros</name>
+    <tooltip>Trims leading zeros from the number passed in as parameter &apos;num&apos;</tooltip>
+    <code>// modify function_name and parameters as you wish.
+// one function per template is recommended. i.e.) create a new code template for each new function.
+function trimLeadingZeros(num) {
+
+	var mrNum = num;
+	var firstDigit = mrNum.slice(0,1);	
+
+	while (firstDigit == &apos;0&apos;) {
+		mrNum = mrNum.substr(1);
+		firstDigit = mrNum.slice(0,1);
+	}
+}</code>
+    <type>FUNCTION</type>
+    <scope>3</scope>
+  </codeTemplate>
+</list>

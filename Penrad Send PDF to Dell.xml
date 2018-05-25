@@ -1,0 +1,55 @@
+<connector>
+  <name>Send PDF to Dell</name>
+  <properties>
+    <property name="DataType">File Writer</property>
+    <property name="FTPAnonymous">0</property>
+    <property name="binary">1</property>
+    <property name="charsetEncoding">DEFAULT_ENCODING</property>
+    <property name="host">10.2.74.161/Mamms</property>
+    <property name="outputAppend">1</property>
+    <property name="outputPattern">${pdfFileName}</property>
+    <property name="passive">1</property>
+    <property name="password">Foote123</property>
+    <property name="scheme">ftp</property>
+    <property name="secure">1</property>
+    <property name="template">${pdfFileBytes}</property>
+    <property name="timeout">10000</property>
+    <property name="username">ftpuser</property>
+    <property name="validateConnections">1</property>
+  </properties>
+  <transformer>
+    <steps/>
+    <inboundTemplate encoding="base64"></inboundTemplate>
+    <outboundTemplate encoding="base64"></outboundTemplate>
+    <inboundProtocol>XML</inboundProtocol>
+    <outboundProtocol>DELIMITED</outboundProtocol>
+    <inboundProperties>
+      <property name="stripNamespaces">true</property>
+    </inboundProperties>
+    <outboundProperties>
+      <property name="batchGroupingColumn"></property>
+      <property name="batchMessageDelimiter"></property>
+      <property name="batchMessageDelimiterIncluded">false</property>
+      <property name="batchScript"></property>
+      <property name="batchSkipRecords">0</property>
+      <property name="batchSplitByRecord">true</property>
+      <property name="columnDelimiter">,</property>
+      <property name="columnNames"></property>
+      <property name="columnWidths"></property>
+      <property name="escapeWithDoubleQuote">true</property>
+      <property name="ignoreCR">true</property>
+      <property name="numberedRows">false</property>
+      <property name="quoteChar">&quot;</property>
+      <property name="quoteEscapeChar">\</property>
+      <property name="recordDelimiter">
+</property>
+    </outboundProperties>
+  </transformer>
+  <filter>
+    <rules/>
+  </filter>
+  <transportName>File Writer</transportName>
+  <mode>DESTINATION</mode>
+  <enabled>false</enabled>
+  <version>2.1.1.5490</version>
+</connector>
